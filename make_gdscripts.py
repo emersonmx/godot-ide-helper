@@ -54,8 +54,7 @@ class GodotXmlReader(object):
 
     def extract_constants(self):
         constants = []
-        elements = self._klass.getElementsByTagName('constants')
-        for e in elements:
+        for e in self._klass.getElementsByTagName('constants'):
             for c in e.childNodes:
                 if c.nodeType != Node.ELEMENT_NODE:
                     continue
@@ -69,12 +68,45 @@ class GodotXmlReader(object):
         constant['description'] = self._get_text_from_element(c)
         return constant
 
+    def extract_signals(self):
+        signals = []
+        for e in self._klass.getElementsByTagName('signals'):
+            for s in e.childNodes:
+                if s.nodeType != Node.ELEMENT_NODE:
+                    continue
+                signals.append(self.extract_signal(s))
+        return signals
+
+    def extract_signal(self, s):
+        signal = {}
+        signal['name'] = self._get_attr(s, 'name')
+        signal['arguments'] = self._extract_signal_arguments(s.getElementsByTagName('argument'))
+        signal['description'] = self._get_text_from_elements(s.getElementsByTagName('description'))
+        return signal
+
+    def _extract_signal_arguments(self, arguments):
+        result = []
+        for a in arguments:
+            if a.nodeType != Node.ELEMENT_NODE:
+                continue
+            result.append(self._extract_signal_argument(a))
+        return result
+
+    def _extract_signal_argument(self, a):
+        argument = {}
+        argument['name'] = self._get_attr(a, 'name')
+        argument['index'] = self._get_attr(a, 'index')
+        argument['type'] = self._get_attr(a, 'type')
+        argument['description'] = self._get_text_from_element(a)
+        return argument
+
     def extract(self):
         raw_class = {}
         raw_class['name'] = self.extract_name()
         raw_class['inherits'] = self.extract_inherits()
         raw_class['brief_description'] = self.extract_brief_description()
         raw_class['constants'] = self.extract_constants()
+        raw_class['signals'] = self.extract_signals()
 
         return raw_class
 
