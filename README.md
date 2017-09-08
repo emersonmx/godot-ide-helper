@@ -7,7 +7,7 @@
 ## Generating gdscripts
 - Create a virtualenv with `python -m venv venv`
 - Install the dependencies with `pip install -r requirements.txt`
-- Run generate.py with `python generate.py`
+- Run generate.py with `python generate.py` and select godot version and generator :smile:
 
 ## Setup Ctags
 
@@ -25,5 +25,7 @@ Add the following to your ~/.ctags file: <sup>[1]</sup>
 ```
 
 Follow [this](https://github.com/syskrank/vim-gdscript-ctags) for vim + gdscript + ctags
+
+I create my tags with `ctags --tag-relative=yes -f tags.libs --languages=gdscript --fields=+liaS -R gdscript-api/`
 
 [1]: https://github.com/syskrank/vim-gdscript-ctags#add-the-following-to-your-ctags-file
