@@ -6,6 +6,7 @@ import textwrap
 
 from xml.dom import *
 from xml.dom.minidom import parse
+from urllib.parse import quote
 
 
 class GodotXmlReader(object):
@@ -55,32 +56,49 @@ class GDScriptWriter(object):
 
     GODOT_ONLINE_API_URL = 'http://docs.godotengine.org/en/stable/classes/'
 
-    def __init__(self):
-        pass
+    def __init__(self, klass):
+        self._klass = klass
 
-    def write_brief_description(self, file, klass):
-        if 'brief_description' not in klass:
+    def _write_brief_description(self, file):
+        if 'brief_description' not in self._klass:
             return
-        file.write('# {}\n'.format(klass['brief_description']))
+        file.write('# {}\n'.format(self._klass['brief_description']))
 
-    def write_description_url(self, file, klass):
-        if 'brief_description' not in klass:
+    def _write_description_url(self, file):
+        if 'brief_description' not in self._klass:
             file.write('#\n')
-        url = '{}class_{}.html'.format(self.GODOT_ONLINE_API_URL, klass['name'].lower())
+        url = '{}class_{}.html'.format(self.GODOT_ONLINE_API_URL,
+            quote(self._klass['name'].lower()))
         file.write('# {}\n'.format(url))
 
-    def write_inherits(self, file, klass):
-        if 'inherits' not in klass:
+    def _write_inherits(self, file):
+        if 'inherits' not in self._klass:
             return
-        if not klass['inherits']:
+        if not self._klass['inherits']:
             return
-        file.write('extends {}\n'.format(klass['inherits']))
+        file.write('extends {}\n'.format(self._klass['inherits']))
 
-    def write_file(self, klass):
-        with open('scripts/{}.gd'.format(klass['name']), 'w+') as file:
-            self.write_brief_description(file, klass)
-            self.write_description_url(file, klass)
-            self.write_inherits(file, klass)
+    def _write_constants(self, file):
+        pass
+
+    def _write_signals(self, file):
+        pass
+
+    def _write_members(self, file):
+        pass
+
+    def _write_methods(self, file):
+        pass
+
+    def write_class(self):
+        with open('scripts/{}.gd'.format(self._klass['name']), 'w+') as file:
+            self._write_brief_description(file)
+            self._write_description_url(file)
+            self._write_inherits(file)
+            self._write_constants(file)
+            self._write_signals(file)
+            self._write_members(file)
+            self._write_methods(file)
 
 
 class XmlToGDScripts(object):
@@ -90,7 +108,6 @@ class XmlToGDScripts(object):
 
         self.dom = self.load_dom()
         self.doc = self.dom.documentElement
-        self.writer = GDScriptWriter()
 
     def load_dom(self):
         return parse('classes.xml')
@@ -102,7 +119,8 @@ class XmlToGDScripts(object):
                 continue
             reader = GodotXmlReader(klass)
             raw_class = reader.extract()
-            self.writer.write_file(raw_class)
+            writer = GDScriptWriter(raw_class)
+            writer.write_class()
             count += 1
             if count > 5:
                 break
