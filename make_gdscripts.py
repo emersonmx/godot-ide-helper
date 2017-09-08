@@ -90,14 +90,13 @@ class GodotXmlReader(object):
             if a.nodeType != Node.ELEMENT_NODE:
                 continue
             result.append(self._extract_signal_argument(a))
-        return result
+        return sorted(result, key=lambda arg: arg['index'])
 
     def _extract_signal_argument(self, a):
         argument = {}
         argument['name'] = self._get_attr(a, 'name')
         argument['index'] = self._get_attr(a, 'index')
         argument['type'] = self._get_attr(a, 'type')
-        argument['description'] = self._get_text_from_element(a)
         return argument
 
     def extract(self):
@@ -165,7 +164,28 @@ class GDScriptWriter(object):
         file.write(text)
 
     def _write_signals(self, file):
-        pass
+        for signal in self._klass['signals']:
+            self._write_signal(file, signal)
+        if self._klass['signals']:
+            self._add_empty_line = True
+
+    def _write_signal(self, file, signal):
+        name = signal['name']
+        arguments = signal['arguments']
+        description = signal['description']
+        text = 'signal ' + name
+
+        argument_list = []
+        for arg in arguments:
+            argument_list.append('{} {}'.format(arg['type'], arg['name']))
+        if argument_list:
+            text += '({})'.format(', '.join(argument_list))
+
+        if description:
+            text += ' # {}'.format(description)
+
+        text += '\n'
+        file.write(text)
 
     def _write_members(self, file):
         pass
