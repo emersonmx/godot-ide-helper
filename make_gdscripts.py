@@ -14,22 +14,18 @@ class GodotXmlReader(object):
     def __init__(self, klass):
         self._klass = klass
 
-    def _getAttr(self, el, attr, default=None):
+    def _get_attr(self, el, attr, default=None):
         return el.getAttribute(attr) if el.hasAttribute(attr) else default
 
-    def extract_name(self):
-        return self._getAttr(self._klass, 'name')
+    def _get_text_from_element(self, el):
+        text = ''
+        for node in el.childNodes:
+            if node.nodeType != Node.TEXT_NODE:
+                continue
+            text += node.data.strip()
+        return text
 
-    def extract_inherits(self):
-        return self._getAttr(self._klass, 'inherits')
-
-    def _wrapped_comment(self, text):
-        result = ''
-        for line in textwrap.wrap(text, 80):
-            result += '# {}\n'.format(line)
-        return result
-
-    def extract_element_text(self, nodes):
+    def _get_text_from_elements(self, nodes):
         text = ''
         for node in nodes:
             if node.nodeType != Node.ELEMENT_NODE:
@@ -40,14 +36,45 @@ class GodotXmlReader(object):
                 text += child.data.strip()
         return text
 
+    def extract_name(self):
+        return self._get_attr(self._klass, 'name')
+
+    def extract_inherits(self):
+        return self._get_attr(self._klass, 'inherits')
+
+    def _wrapped_comment(self, text):
+        result = ''
+        for line in textwrap.wrap(text, 80):
+            result += '# {}\n'.format(line)
+        return result
+
     def extract_brief_description(self):
-        return self.extract_element_text(self._klass.getElementsByTagName('brief_description'))
+        return self._get_text_from_elements(
+            self._klass.getElementsByTagName('brief_description'))
+
+    def extract_constants(self):
+        constants = []
+        elements = self._klass.getElementsByTagName('constants')
+        for e in elements:
+            for c in e.childNodes:
+                if c.nodeType != Node.ELEMENT_NODE:
+                    continue
+                constants.append(self.extract_constant(c))
+        return constants
+
+    def extract_constant(self, c):
+        constant = {}
+        constant['name'] = self._get_attr(c, 'name')
+        constant['value'] = self._get_attr(c, 'value')
+        constant['description'] = self._get_text_from_element(c)
+        return constant
 
     def extract(self):
         raw_class = {}
         raw_class['name'] = self.extract_name()
         raw_class['inherits'] = self.extract_inherits()
         raw_class['brief_description'] = self.extract_brief_description()
+        raw_class['constants'] = self.extract_constants()
 
         return raw_class
 
@@ -58,6 +85,12 @@ class GDScriptWriter(object):
 
     def __init__(self, klass):
         self._klass = klass
+        self._add_empty_line = False
+
+    def _write_newline(self, file, prefix=''):
+        if self._add_empty_line:
+            file.write(prefix + '\n')
+        self._add_empty_line = False
 
     def _write_brief_description(self, file):
         if 'brief_description' not in self._klass:
@@ -65,24 +98,39 @@ class GDScriptWriter(object):
         if not self._klass['brief_description']:
             return
         file.write('# {}\n'.format(self._klass['brief_description']))
+        self._add_empty_line = True
 
     def _write_description_url(self, file):
-        if 'brief_description' in self._klass and self._klass['brief_description']:
-            file.write('#\n')
         url = '{}class_{}.html'.format(self.GODOT_ONLINE_API_URL,
             quote(self._klass['name'].lower()))
         file.write('# {}\n'.format(url))
+        self._add_empty_line = True
 
     def _write_inherits(self, file):
         if 'inherits' not in self._klass:
             return
         if not self._klass['inherits']:
             return
-        file.write('\n')
         file.write('extends {}\n'.format(self._klass['inherits']))
+        self._add_empty_line = True
 
     def _write_constants(self, file):
-        pass
+        for constant in self._klass['constants']:
+            self._write_constant(file, constant)
+        if self._klass['constants']:
+            self._add_empty_line = True
+
+    def _write_constant(self, file, constant):
+        name = constant['name']
+        value = constant['value']
+        description = constant['description']
+        text = 'const ' + name
+        if value:
+            text += ' = ' + value
+        if description:
+            text += ' # ' + description
+        text += '\n'
+        file.write(text)
 
     def _write_signals(self, file):
         pass
@@ -96,12 +144,19 @@ class GDScriptWriter(object):
     def write_class(self):
         with open('scripts/{}.gd'.format(self._klass['name']), 'w+') as file:
             self._write_brief_description(file)
+            self._write_newline(file, '#')
             self._write_description_url(file)
+            self._write_newline(file)
             self._write_inherits(file)
+            self._write_newline(file)
             self._write_constants(file)
+            self._write_newline(file)
             self._write_signals(file)
+            self._write_newline(file)
             self._write_members(file)
+            self._write_newline(file)
             self._write_methods(file)
+            self._write_newline(file)
 
 
 class XmlToGDScripts(object):
@@ -125,7 +180,7 @@ class XmlToGDScripts(object):
             writer = GDScriptWriter(raw_class)
             writer.write_class()
             count += 1
-            if count > 5:
+            if count > 10:
                 break
 
 def main():
