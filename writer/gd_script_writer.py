@@ -97,25 +97,24 @@ class GDScriptWriter(Writer):
         text = ''
         if signal.description:
             text += self._get_description_text(signal.description, not first)
-
         text += 'signal ' + signal.name
-
         text += self._get_arguments_text(signal.arguments)
-
-        # argument_list = []
-        # for arg in arguments:
-            # argument_list.append('{} {}'.format(arg['type'], arg['name']))
-        # if argument_list:
-            # text += '({})'.format(', '.join(argument_list))
-
         text += '\n'
         file.write(text)
 
-    def _write_arguments(self, file, arguments):
-        pass
-
     def _write_members(self, file, klass):
-        pass
+        for idx, member in enumerate(klass.members):
+            self._write_member(file, member, idx == 0)
+        if klass.members:
+            self._add_empty_line = True
+
+    def _write_member(self, file, member, first):
+        text = ''
+        if member.description:
+            text += self._get_description_text(member.description, not first)
+        text += 'var {} # {}'.format(member.name, member.type)
+        text += '\n'
+        file.write(text)
 
     def _write_methods(self, file, klass):
         pass

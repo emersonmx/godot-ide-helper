@@ -16,6 +16,9 @@ class XmlReader(Reader):
     def _get_text(self, el, default=''):
         return el.text if el is not None else default
 
+    def _element_or_empty(self, element):
+        return element if element is not None else []
+
     def _extract_arguments(self, arguments):
         result = []
         for argument in arguments:
@@ -44,9 +47,8 @@ class XmlReader(Reader):
 
     def _extract_constants(self, constants):
         result = []
-        for constant in (constants if constants is not None else []):
-            obj = self._extract_constant(constant)
-            result.append(obj)
+        for constant in self._element_or_empty(constants):
+            result.append(self._extract_constant(constant))
         return result
 
     def _extract_constant(self, constant):
@@ -58,9 +60,8 @@ class XmlReader(Reader):
 
     def _extract_signals(self, signals):
         result = []
-        for signal in (signals if signals is not None else []):
-            obj = self._extract_signal(signal)
-            result.append(obj)
+        for signal in self._element_or_empty(signals):
+            result.append(self._extract_signal(signal))
         return result
 
     def _extract_signal(self, signal):
@@ -70,8 +71,18 @@ class XmlReader(Reader):
         obj.description = self._get_text(signal.find('description'))
         return obj
 
-    def _extract_members(self, element):
-        return []
+    def _extract_members(self, members):
+        result = []
+        for member in self._element_or_empty(members):
+            result.append(self._extract_member(member))
+        return result
+
+    def _extract_member(self, member):
+        obj = Member()
+        obj.name = member.get('name')
+        obj.type = member.get('type')
+        obj.description = self._get_text(member)
+        return obj
 
     def _extract_methods(self, element):
         return []
