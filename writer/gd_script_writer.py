@@ -29,7 +29,8 @@ class GDScriptWriter(Writer):
         for line in texts:
             if len(line.strip()) == 0:
                 count_empty_lines += 1
-            result += '# {}\n'.format(line.strip())
+            new_line = '# {}'.format(line.strip())
+            result += new_line.strip() + '\n'
 
         if count_empty_lines == len(texts):
             return '\n' if newline_spaced else ''
