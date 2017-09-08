@@ -1,52 +1,49 @@
-class Base(object):
-    def load_from_xml_element(self, element):
-        pass
-
-class Constant(Base):
+class Constant(object):
     def __init__(self):
         super(Constant, self).__init__()
 
-    def load_from_xml_element(self, element):
-        pass
+        self.name = ''
+        self.value = ''
+        self.description = ''
 
-class Signal(Base):
+class Signal(object):
     def __init__(self):
         super(Signal, self).__init__()
 
-    def load_from_xml_element(self, element):
-        pass
+        self.name = ''
+        self.arguments = []
+        self.description = ''
 
-class Member(Base):
+class Member(object):
     def __init__(self):
         super(Member, self).__init__()
 
-    def load_from_xml_element(self, element):
-        pass
+        self.name = ''
+        self.type = ''
+        self.description = ''
 
-class Variable(Base):
-    def __init__(self):
-        super(Variable, self).__init__()
-
-    def load_from_xml_element(self, element):
-        pass
-
-class Argument(Base):
+class Argument(object):
     def __init__(self):
         super(Argument, self).__init__()
 
-    def load_from_xml_element(self, element):
-        pass
+        self.name = ''
+        self.index = ''
+        self.type = ''
 
-class Function(Base):
+class Method(object):
     def __init__(self):
-        super(Function, self).__init__()
+        super(Method, self).__init__()
 
-    def load_from_xml_element(self, element):
-        pass
+        self.name = ''
+        self.return_type = ''
+        self.argurments = []
+        self.description = ''
 
 class Class(object):
     def __init__(self):
         super(Class, self).__init__()
 
-    def load_from_xml_element(self, element):
-        pass
+        self.name = ''
+        self.inherits = ''
+        self.brief_description = ''
+        self.descriptions = ''
