@@ -28,8 +28,19 @@ class XmlReader(Reader):
         klass.methods = self._extract_methods(element.find('methods'))
         return klass
 
-    def _extract_constants(self, element):
-        return []
+    def _extract_constants(self, constants):
+        result = []
+        for constant in constants:
+            obj = self._extract_constant(constant)
+            result.append(obj)
+        return result
+
+    def _extract_constant(self, constant):
+        obj = Constant()
+        obj.name = constant.get('name')
+        obj.value = constant.get('value')
+        obj.description = self._get_text(constant)
+        return obj
 
     def _extract_signals(self, element):
         return []
