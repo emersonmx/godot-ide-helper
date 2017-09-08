@@ -6,9 +6,8 @@ import textwrap
 
 from xml.dom import *
 from xml.dom.minidom import parse
-from urllib.parse import quote
 
-from reader import GodotXmlReader
+from reader import XmlReader
 from writer import GDScriptWriter
 
 
@@ -29,7 +28,7 @@ class Generator(object):
         for klass in self.doc.childNodes:
             if klass.nodeType != Node.ELEMENT_NODE:
                 continue
-            reader = GodotXmlReader(klass)
+            reader = XmlReader(klass)
             raw_class = reader.extract()
             writer = GDScriptWriter(raw_class)
             writer.write_class()

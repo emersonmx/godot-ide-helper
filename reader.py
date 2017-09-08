@@ -4,7 +4,7 @@
 from xml.dom import *
 
 
-class GodotXmlReader(object):
+class XmlReader(object):
 
     def __init__(self, klass):
         self._klass = klass
