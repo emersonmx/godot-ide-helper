@@ -17,12 +17,28 @@ class XmlReader(Reader):
         return el.text if el is not None else default
 
     def _extract_class(self, element):
-        class_object = Class()
-        class_object.name = element.get('name')
-        class_object.inherits = element.get('inherits')
-        class_object.brief_description = self._get_text(element.find('brief_description'))
-        class_object.description = self._get_text(element.find('description'))
-        return class_object
+        klass = Class()
+        klass.name = element.get('name')
+        klass.inherits = element.get('inherits')
+        klass.brief_description = self._get_text(element.find('brief_description'))
+        klass.description = self._get_text(element.find('description'))
+        klass.constants = self._extract_constants(element.find('constants'))
+        klass.signals = self._extract_signals(element.find('signals'))
+        klass.members = self._extract_members(element.find('members'))
+        klass.methods = self._extract_methods(element.find('methods'))
+        return klass
+
+    def _extract_constants(self, element):
+        return []
+
+    def _extract_signals(self, element):
+        return []
+
+    def _extract_members(self, element):
+        return []
+
+    def _extract_methods(self, element):
+        return []
 
     def read(self):
         tree = ET.parse('classes.xml')
