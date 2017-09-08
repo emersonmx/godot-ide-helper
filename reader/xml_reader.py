@@ -53,4 +53,4 @@ class XmlReader(Reader):
             if i > 10:
                 break
 
-        return []
+        return result

@@ -18,9 +18,9 @@ class Generator(object):
 
     def run(self):
         reader = self.make_reader()
-        for class_object in reader.read():
+        for klass in reader.read():
             writer = self.make_writer()
-            writer.write(class_object)
+            writer.write(klass)
 
 
 class GDScriptGenerator(Generator):
