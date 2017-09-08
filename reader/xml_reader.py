@@ -42,15 +42,11 @@ class XmlReader(Reader):
 
     def read(self):
         tree = ET.parse('classes.xml')
-        root = tree.getroot()
-        result = []
 
         i = 0
-        for child in root:
+        for child in tree.getroot():
             klass = self._extract_class(child)
-            result.append(klass)
+            yield klass
             i+=1
             if i > 10:
                 break
-
-        return result
