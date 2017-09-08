@@ -40,14 +40,14 @@ class GodotXmlReader(object):
                 text += child.data.strip()
         return text
 
+    def extract_brief_description(self):
+        return self.extract_element_text(self._klass.getElementsByTagName('brief_description'))
+
     def extract(self):
         raw_class = {}
         raw_class['name'] = self.extract_name()
         raw_class['inherits'] = self.extract_inherits()
-        brief_description = self.extract_element_text(
-            self._klass.getElementsByTagName('brief_description'))
-        if len(brief_description.strip()) > 0:
-            raw_class['brief_description'] = brief_description
+        raw_class['brief_description'] = self.extract_brief_description()
 
         return raw_class
 
@@ -62,10 +62,12 @@ class GDScriptWriter(object):
     def _write_brief_description(self, file):
         if 'brief_description' not in self._klass:
             return
+        if not self._klass['brief_description']:
+            return
         file.write('# {}\n'.format(self._klass['brief_description']))
 
     def _write_description_url(self, file):
-        if 'brief_description' not in self._klass:
+        if 'brief_description' in self._klass and self._klass['brief_description']:
             file.write('#\n')
         url = '{}class_{}.html'.format(self.GODOT_ONLINE_API_URL,
             quote(self._klass['name'].lower()))
@@ -76,6 +78,7 @@ class GDScriptWriter(object):
             return
         if not self._klass['inherits']:
             return
+        file.write('\n')
         file.write('extends {}\n'.format(self._klass['inherits']))
 
     def _write_constants(self, file):
