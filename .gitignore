@@ -1,2 +1,3 @@
 *.py[co]
 classes.xml
+/venv
