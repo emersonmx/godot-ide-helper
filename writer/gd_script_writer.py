@@ -45,11 +45,13 @@ class GDScriptWriter(Writer):
         if argument_list:
             result += '({})'.format(', '.join(argument_list))
         else:
-            result += '()'
+            result += '()' if force_empty else ''
         return result
 
     def _write_class(self, klass):
         with open('scripts/{}.gd'.format(klass.name), 'w+') as file:
+            self._write_class_def(file, klass)
+            self._write_newline(file)
             self._write_brief_description(file, klass)
             self._write_newline(file, '#')
             self._write_description_url(file, klass)
@@ -63,6 +65,10 @@ class GDScriptWriter(Writer):
             self._write_members(file, klass)
             self._write_newline(file)
             self._write_methods(file, klass)
+
+    def _write_class_def(self, file, klass):
+        file.write('#! class: {}\n'.format(klass.name))
+        self._add_empty_line = True
 
     def _write_brief_description(self, file, klass):
         if not klass.brief_description.strip():
