@@ -208,7 +208,6 @@ class GDScriptWriter(object):
             self._write_members(file)
             self._write_newline(file)
             self._write_methods(file)
-            self._write_newline(file)
 
 
 class XmlToGDScripts(object):
