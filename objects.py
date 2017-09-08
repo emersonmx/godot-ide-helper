@@ -46,4 +46,16 @@ class Class(object):
         self.name = ''
         self.inherits = ''
         self.brief_description = ''
-        self.descriptions = ''
+        self.description = ''
+
+        self.constants = []
+        self.signals = []
+        self.members = []
+        self.methods = []
+
+    def __repr__(self):
+        result = 'class {}'.format(self.name)
+        if self.inherits:
+            result += ' extends {}'.format(self.inherits)
+
+        return result
