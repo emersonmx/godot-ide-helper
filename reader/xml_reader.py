@@ -84,8 +84,20 @@ class XmlReader(Reader):
         obj.description = self._get_text(member)
         return obj
 
-    def _extract_methods(self, element):
-        return []
+    def _extract_methods(self, methods):
+        result = []
+        for method in self._element_or_empty(methods):
+            result.append(self._extract_method(method))
+        return result
+
+    def _extract_method(self, method):
+        obj = Method()
+        obj.name = method.get('name')
+        return_element = method.find('return')
+        obj.return_type = return_element.get('type') if return_element is not None else ''
+        obj.arguments = self._extract_arguments(method.findall('argument'))
+        obj.description = self._get_text(method.find('description'))
+        return obj
 
     def read(self):
         tree = ET.parse('classes.xml')

@@ -36,7 +36,7 @@ class Method(object):
 
         self.name = ''
         self.return_type = ''
-        self.argurments = []
+        self.arguments = []
         self.description = ''
 
 class Class(object):

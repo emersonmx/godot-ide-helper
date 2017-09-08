@@ -24,17 +24,27 @@ class GDScriptWriter(Writer):
         result = ''
         if newline_spaced:
             result += '\n'
+
+        count_empty_lines = 0
         for line in texts:
+            if len(line.strip()) == 0:
+                count_empty_lines += 1
             result += '# {}\n'.format(line.strip())
+
+        if count_empty_lines == len(texts):
+            return '\n' if newline_spaced else ''
+
         return result
 
-    def _get_arguments_text(self, arguments):
+    def _get_arguments_text(self, arguments, force_empty=False):
         result = ''
         argument_list = []
         for arg in arguments:
             argument_list.append('{} {}'.format(arg.type, arg.name))
         if argument_list:
             result += '({})'.format(', '.join(argument_list))
+        else:
+            result += '()'
         return result
 
     def _write_class(self, klass):
@@ -112,12 +122,28 @@ class GDScriptWriter(Writer):
         text = ''
         if member.description:
             text += self._get_description_text(member.description, not first)
-        text += 'var {} # {}'.format(member.name, member.type)
+        text += 'var {} # type: {}'.format(member.name, member.type)
         text += '\n'
         file.write(text)
 
     def _write_methods(self, file, klass):
-        pass
+        for idx, method in enumerate(klass.methods):
+            self._write_method(file, method, idx == 0)
+        if klass.methods:
+            self._add_empty_line = True
+
+    def _write_method(self, file, method, first):
+        text = ''
+        if method.description:
+            text += self._get_description_text(method.description, not first)
+        text += 'func ' + method.name
+        text += self._get_arguments_text(method.arguments, True)
+        text += ':'
+        if method.return_type:
+            text += ' # returns: {}'.format(method.return_type)
+        text += '\n'
+        text += '    pass\n'
+        file.write(text)
 
     def write(self, klass):
         self._write_class(klass)
