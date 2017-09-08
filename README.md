@@ -1,0 +1,1 @@
+# gdscript-ide-helper
