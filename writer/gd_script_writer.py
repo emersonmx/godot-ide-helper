@@ -19,6 +19,24 @@ class GDScriptWriter(Writer):
             file.write(prefix + '\n')
         self._add_empty_line = False
 
+    def _get_description_text(self, text, newline_spaced=True):
+        texts = text.split('\n')
+        result = ''
+        if newline_spaced:
+            result += '\n'
+        for line in texts:
+            result += '# {}\n'.format(line.strip())
+        return result
+
+    def _get_arguments_text(self, arguments):
+        result = ''
+        argument_list = []
+        for arg in arguments:
+            argument_list.append('{} {}'.format(arg.type, arg.name))
+        if argument_list:
+            result += '({})'.format(', '.join(argument_list))
+        return result
+
     def _write_class(self, klass):
         with open('scripts/{}.gd'.format(klass.name), 'w+') as file:
             self._write_brief_description(file, klass)
@@ -54,24 +72,46 @@ class GDScriptWriter(Writer):
         self._add_empty_line = True
 
     def _write_constants(self, file, klass):
-        for constant in klass.constants:
-            self._write_constant(file, constant)
+        for idx, constant in enumerate(klass.constants):
+            self._write_constant(file, constant, idx == 0)
         if klass.constants:
             self._add_empty_line = True
 
-    def _write_constant(self, file, constant):
-        name = constant.name
-        value = constant.value
-        description = constant.description
-        text = 'const ' + name
-        if value:
-            text += ' = ' + value
-        if description:
-            text += ' # ' + description
+    def _write_constant(self, file, constant, first):
+        text = ''
+        if constant.description:
+            text += self._get_description_text(constant.description, not first)
+        text += 'const ' + constant.name
+        if constant.value:
+            text += ' = ' + constant.value
         text += '\n'
         file.write(text)
 
     def _write_signals(self, file, klass):
+        for idx, signal in enumerate(klass.signals):
+            self._write_signal(file, signal, idx == 0)
+        if klass.signals:
+            self._add_empty_line = True
+
+    def _write_signal(self, file, signal, first):
+        text = ''
+        if signal.description:
+            text += self._get_description_text(signal.description, not first)
+
+        text += 'signal ' + signal.name
+
+        text += self._get_arguments_text(signal.arguments)
+
+        # argument_list = []
+        # for arg in arguments:
+            # argument_list.append('{} {}'.format(arg['type'], arg['name']))
+        # if argument_list:
+            # text += '({})'.format(', '.join(argument_list))
+
+        text += '\n'
+        file.write(text)
+
+    def _write_arguments(self, file, arguments):
         pass
 
     def _write_members(self, file, klass):
