@@ -11,21 +11,22 @@
 
 ## Setup Ctags
 
-Add the following to your ~/.ctags file: <sup>[1]</sup>
+Add the following to your ~/.ctags file:
 ```
 --langdef=gdscript
---langmap=gdscript:.gd
+--map-gdscript=.gd
 
---regex-gdscript=/^[ \t]*const[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/c,constant/i
---regex-gdscript=/^[ \t]*export[ \t]*(\([ \t]*[a-zA-Z0-9_, \"\*\.]*\)|[ \t])+var[ \t]+([a-zA-Z0-9_]+)[ \t]*/\2/e,export/i
---regex-gdscript=/^[ \t]*onready[ \t]+var[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/o,onready-variable/i
---regex-gdscript=/^[ \t]*signal[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/s,signal/i
---regex-gdscript=/^[ \t]*func[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/f,function/i
---regex-gdscript=/^[ \t]*var[ \t]+([a-zA-Z0-9_]+)[ \t]=[ \t]*preload*/\1/p,preload/i
+--regex-gdscript=/^#![ \t]*class:[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/c,class/{scope=set}
+--regex-gdscript=/^[ \t]*const[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/C,constant/{scope=ref}
+--regex-gdscript=/^[ \t]*export[ \t]*(\([ \t]*[a-zA-Z0-9_, \"\*\.]*\)|[ \t])+var[ \t]+([a-zA-Z0-9_]+)[ \t]*/\2/e,export/{scope=ref}
+--regex-gdscript=/^[ \t]*onready[ \t]+var[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/o,onready-variable/{scope=ref}
+--regex-gdscript=/^[ \t]*signal[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/s,signal/{scope=ref}
+--regex-gdscript=/^[ \t]*func[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/f,function/{scope=ref}
+--regex-gdscript=/^[ \t]*var[ \t]+([a-zA-Z0-9_]+)[ \t]=[ \t]*preload*/\1/p,preload/{scope=ref}
 ```
 
 Follow [this](https://github.com/syskrank/vim-gdscript-ctags) for vim + gdscript + ctags
 
-I create my tags with `ctags --tag-relative=yes -f tags.libs --languages=gdscript --fields=+liaS -R gdscript-api/`
+I create my tags with `ctags -f tags --languages=gdscript --fields=+liaS -R gdscript-api/`
 
 [1]: https://github.com/syskrank/vim-gdscript-ctags#add-the-following-to-your-ctags-file
