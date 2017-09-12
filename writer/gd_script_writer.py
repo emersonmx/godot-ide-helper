@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import textwrap
+
 from writer.common import Writer
 
 from urllib.parse import quote
@@ -29,7 +31,8 @@ class GDScriptWriter(Writer):
         for line in texts:
             if len(line.strip()) == 0:
                 count_empty_lines += 1
-            new_line = '# {}'.format(line.strip())
+            wrapped_text = '\n# '.join(textwrap.wrap(line, 78))
+            new_line = '# {}'.format(wrapped_text.strip())
             result += new_line.strip() + '\n'
 
         if count_empty_lines == len(texts):
@@ -54,7 +57,7 @@ class GDScriptWriter(Writer):
             self._write_newline(file)
             self._write_brief_description(file, klass)
             self._write_newline(file, '#')
-            self._write_description_url(file, klass)
+            self._write_description(file, klass)
             self._write_newline(file)
             self._write_inherits(file, klass)
             self._write_newline(file)
@@ -76,11 +79,15 @@ class GDScriptWriter(Writer):
         file.write('# {}\n'.format(klass.brief_description.strip()))
         self._add_empty_line = True
 
-    def _write_description_url(self, file, klass):
-        url = '{}class_{}.html'.format(self.GODOT_ONLINE_API_URL,
-            quote(klass.name.lower()))
-        file.write('# {}\n'.format(url))
-        self._add_empty_line = True
+    def _write_description(self, file, klass):
+        result = ''
+        for line in klass.description.split('\n'):
+            result += '\n# '.join(textwrap.wrap(line, 78)).strip()
+        if result.strip():
+            result = '# ' + result + '\n'
+        file.write(result)
+        if klass.description.strip():
+            self._add_empty_line = True
 
     def _write_inherits(self, file, klass):
         if not klass.inherits:
