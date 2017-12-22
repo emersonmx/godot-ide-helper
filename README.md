@@ -3,11 +3,14 @@
 ## Requirements
 - Python 3
 - Requests
+- Click
 
 ## Generating gdscripts
-- Create a virtualenv with `python -m venv venv`
+- Create a virtualenv with `python -m venv venv` or `virtualenv venv`
+- Source venv with `source venv/bin/activate`
 - Install the dependencies with `pip install -r requirements.txt`
-- Run generate.py with `python generate.py` and select godot version and generator :smile:
+- Run `pip install --editable .`
+- Run `godot_ide_helper build` to build stubs for current stable version
 
 ## Setup Ctags
 
