@@ -5,7 +5,7 @@
 - Requests
 - Click
 
-## Generating gdscripts
+## Generating GDScripts
 - Create a virtualenv with `python -m venv venv` or `virtualenv venv`
 - Source venv with `source venv/bin/activate`
 - Install the dependencies with `pip install -r requirements.txt`
