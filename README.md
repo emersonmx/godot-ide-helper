@@ -14,7 +14,7 @@
 
 ## Setup Ctags
 
-Add the following to your ~/.ctags file:
+Add the following to your `~/.ctags` file:
 ```
 --langdef=gdscript
 --map-gdscript=.gd
