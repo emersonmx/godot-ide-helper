@@ -1,5 +1,8 @@
 # gdscript-ide-helper
 
+This tool create stubs from GDScript API. You can use this with ctags or
+anything you want.
+
 ## Requirements
 - Python 3
 - Requests
