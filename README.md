@@ -30,6 +30,6 @@ Add the following to your `~/.ctags` file:
 
 Follow [this](https://github.com/syskrank/vim-gdscript-ctags) for vim + gdscript + ctags
 
-I create my tags with `ctags -f tags --languages=gdscript --fields=+liaS -R gdscript-api/`
+I create my tags with `ctags -f tags --languages=gdscript --tag-relative=never --fields=+liaS -R api/`
 
 [1]: https://github.com/syskrank/vim-gdscript-ctags#add-the-following-to-your-ctags-file
