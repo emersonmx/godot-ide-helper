@@ -42,7 +42,7 @@ class XmlReader(Reader):
         klass.constants = self._extract_constants(element.find('constants'))
         klass.signals = self._extract_signals(element.find('signals'))
         klass.members = self._extract_members(element.find('members'))
-        klass.methods = self._extract_methods(element.find('methods'))
+        klass.methods = self._extract_methods(element.find('methods'), klass)
         return klass
 
     def _extract_constants(self, constants):
@@ -84,10 +84,12 @@ class XmlReader(Reader):
         obj.description = self._get_text(member)
         return obj
 
-    def _extract_methods(self, methods):
+    def _extract_methods(self, methods, klass):
         result = []
         for method in self._element_or_empty(methods):
-            result.append(self._extract_method(method))
+            obj = self._extract_method(method)
+            obj.class_object = klass
+            result.append(obj)
         return result
 
     def _extract_method(self, method):

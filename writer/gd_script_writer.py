@@ -9,8 +9,6 @@ from urllib.parse import quote
 
 class GDScriptWriter(Writer):
 
-    GODOT_ONLINE_API_URL = 'http://docs.godotengine.org/en/stable/classes/'
-
     def __init__(self):
         super(GDScriptWriter, self).__init__()
 
@@ -83,6 +81,8 @@ class GDScriptWriter(Writer):
         result = ''
         for line in klass.description.split('\n'):
             result += '\n# '.join(textwrap.wrap(line, 78)).strip()
+        result += '\n#'
+        result += '\n# {}'.format(klass.get_doc_link())
         if result.strip():
             result = '# ' + result + '\n'
         file.write(result)
@@ -150,6 +150,8 @@ class GDScriptWriter(Writer):
         text = ''
         if method.description:
             text += self._get_description_text(method.description, not first)
+        text += '# {}\n'.format(method.get_doc_link())
+        text += '#\n'
         text += 'func ' + method.name
         text += self._get_arguments_text(method.arguments, True)
         text += ':'
