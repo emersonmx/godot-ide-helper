@@ -1,6 +1,6 @@
 # gdscript-ide-helper
 
-This tool create stubs from GDScript API. You can use this with ctags or
+This tool create stubs from GDScript API (Godot < 3 only). You can use this with ctags or
 anything you want.
 
 ## Requirements
