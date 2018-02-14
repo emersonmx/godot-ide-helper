@@ -10,11 +10,6 @@ from godot_ide_helper.objects import *
 
 class XmlReader(Reader):
 
-    def __init__(self, inputfile):
-        super(XmlReader, self).__init__()
-
-        self._inputfile = inputfile
-
     def _get_text(self, el, default=''):
         return el.text if el is not None else default
 
@@ -102,6 +97,13 @@ class XmlReader(Reader):
         obj.arguments = self._extract_arguments(method.findall('argument'))
         obj.description = self._get_text(method.find('description'))
         return obj
+
+class ClassesXmlReader(XmlReader):
+
+    def __init__(self, inputfile):
+        super(ClassesXmlReader, self).__init__()
+
+        self._inputfile = inputfile
 
     def read(self):
         tree = ET.parse(self._inputfile)

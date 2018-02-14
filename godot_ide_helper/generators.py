@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from godot_ide_helper.reader import XmlReader
+from godot_ide_helper.reader import ClassesXmlReader
 from godot_ide_helper.writer import GDScriptWriter
 
 
@@ -32,7 +32,7 @@ class GDScriptGenerator(Generator):
         self._output_path = output_path
 
     def make_reader(self):
-        return XmlReader(self._inputfile)
+        return ClassesXmlReader(self._inputfile)
 
     def make_writer(self):
         return GDScriptWriter(self._output_path)
