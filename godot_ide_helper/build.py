@@ -10,10 +10,10 @@ from godot_ide_helper.versions import GodotVersions
 
 class Downloader:
 
-    def __init__(self, version, use_cache=True):
+    def __init__(self, version, cache=True):
         self.dl_url_base = 'https://github.com/godotengine/godot/archive/'
         self.version = version
-        self.use_cache = use_cache
+        self.cache = cache
 
     def get_download_url(self):
         return os.path.join(self.dl_url_base, self.zip_filename())
@@ -27,7 +27,7 @@ class Downloader:
 
     def run(self):
         output_path = self.get_output_path()
-        if os.path.exists(output_path) and self.use_cache:
+        if os.path.exists(output_path) and self.cache:
             return
 
         dl_url = self.get_download_url()
