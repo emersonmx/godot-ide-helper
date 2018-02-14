@@ -15,6 +15,13 @@ class GDScriptWriter(Writer):
 
         self._output_path = output_path
         self._add_empty_line = False
+        self._indent_level = 0
+        self._indent_char = ' ' * 4
+
+    def _make_line(self, line='', nl=True):
+        result = (self._indent_char * self._indent_level) + line
+        result += '\n' if nl else ''
+        return result
 
     def _write_newline(self, file, prefix=''):
         if self._add_empty_line:
@@ -55,13 +62,11 @@ class GDScriptWriter(Writer):
         output_path = os.path.join(self._output_path, '{}.gd'.format(klass.name))
         os.makedirs(self._output_path, exist_ok=True)
         with open(output_path, 'w+') as file:
-            self._write_class_def(file, klass)
-            self._write_newline(file)
             self._write_brief_description(file, klass)
             self._write_newline(file, '#')
             self._write_description(file, klass)
             self._write_newline(file)
-            self._write_inherits(file, klass)
+            self._write_class_def(file, klass)
             self._write_newline(file)
             self._write_constants(file, klass)
             self._write_newline(file)
@@ -70,10 +75,6 @@ class GDScriptWriter(Writer):
             self._write_members(file, klass)
             self._write_newline(file)
             self._write_methods(file, klass)
-
-    def _write_class_def(self, file, klass):
-        file.write('#! class: {}\n'.format(klass.name))
-        self._add_empty_line = True
 
     def _write_brief_description(self, file, klass):
         if not klass.brief_description.strip():
@@ -93,10 +94,12 @@ class GDScriptWriter(Writer):
         if klass.description.strip():
             self._add_empty_line = True
 
-    def _write_inherits(self, file, klass):
+    def _write_class_def(self, file, klass):
         if not klass.inherits:
             return
-        file.write('extends {}\n'.format(klass.inherits))
+        raw_line = 'class {} extends {}:\n'.format(klass.name, klass.inherits)
+        file.write(self._make_line(raw_line))
+        self._indent_level += 1
         self._add_empty_line = True
 
     def _write_constants(self, file, klass):
