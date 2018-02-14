@@ -19,7 +19,7 @@ class GodotVersions:
 
         tags = response.json()
 
-        # yield 'master'
+        yield 'master'
         for tag in tags:
             yield tag['name']
 

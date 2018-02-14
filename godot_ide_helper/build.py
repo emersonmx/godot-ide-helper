@@ -55,8 +55,17 @@ class Builder:
     def __init__(self, version):
         self.version = version
 
+    def build_legacy(self):
+        print('build_legacy')
+
+    def build(self):
+        print('build')
+
     def run(self):
-        pass
+        if self.version < '3.0-stable':
+            self.build_legacy()
+        else:
+            self.build()
 
 @cli.command()
 @click.option('--generator', default='GDScript', type=click.Choice(['GDScript']),
