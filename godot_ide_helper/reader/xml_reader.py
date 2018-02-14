@@ -98,16 +98,30 @@ class XmlReader(Reader):
         obj.description = self._get_text(method.find('description'))
         return obj
 
-class ClassesXmlReader(XmlReader):
+
+class ClassXmlReader(XmlReader):
 
     def __init__(self, inputfile):
-        super(ClassesXmlReader, self).__init__()
+        super(ClassXmlReader, self).__init__()
 
         self._inputfile = inputfile
 
-    def read(self):
-        tree = ET.parse(self._inputfile)
+    def _parse_inputfile(self):
+        return ET.parse(self._inputfile)
 
-        for child in tree.getroot():
+    def get_children(self, tree):
+        return [tree.getroot()]
+
+    def read(self):
+        tree = self._parse_inputfile()
+        for child in self.get_children(tree):
             klass = self._extract_class(child)
             yield klass
+
+class ClassesXmlReader(ClassXmlReader):
+
+    def __init__(self, inputfile):
+        super(ClassesXmlReader, self).__init__(inputfile)
+
+    def get_children(self, tree):
+        return tree.getroot()
