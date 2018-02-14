@@ -11,12 +11,11 @@ import generators
 
 CLASSES_PATH = os.path.abspath('classes.xml')
 
-
 class GodotVersions:
 
     def __init__(self):
         self.headers = {'Accept': 'application/vnd.github.v3+json'}
-        self.url = 'https://api.github.com/repos/godotengine/godot/releases'
+        self.url = 'https://api.github.com/repos/godotengine/godot/tags'
         self.dl_url_base = 'https://github.com/godotengine/godot/raw/{}/doc/base/classes.xml'
 
     def get_download_url(self, version):
@@ -28,7 +27,7 @@ class GodotVersions:
 
         # yield 'master'
         for release in releases:
-            yield release['tag_name']
+            yield release['name']
 
     def download(self, version):
         dl_url = self.get_download_url(version)
