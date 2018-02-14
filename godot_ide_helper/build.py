@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import os
+import zipfile
 import click
 import requests
 
-from godot_ide_helper.cli import cli, get_cache_path
+from godot_ide_helper.cli import cli
+from godot_ide_helper.utils import *
 from godot_ide_helper.versions import GodotVersions
 
 class Downloader:
@@ -16,18 +18,12 @@ class Downloader:
         self.cache = cache
 
     def get_download_url(self):
-        return os.path.join(self.dl_url_base, self.zip_filename())
-
-    def zip_filename(self):
-        return '{}.zip'.format(self.version)
-
-    def get_output_path(self):
-        cache_path = get_cache_path()
-        return os.path.join(cache_path, self.zip_filename())
+        return os.path.join(self.dl_url_base, get_zip_filename(self.version))
 
     def run(self):
-        output_path = self.get_output_path()
+        output_path = get_zip_filepath(self.version)
         if os.path.exists(output_path) and self.cache:
+            click.echo('Using cached version.')
             return
 
         dl_url = self.get_download_url()
@@ -38,11 +34,29 @@ class Downloader:
 
 class Extractor:
 
-    def __init__(self):
-        pass
+    def __init__(self, version):
+        self.version = version
+        self.cache = cache
 
     def run(self):
-        pass
+        dl_url = self.get_download_url()
+        response = requests.get(dl_url, stream=True)
+        with open(output_path, 'wb') as f:
+            for chunk in response:
+                f.write(chunk)
+
+class Extractor:
+
+    def __init__(self, version):
+        self.version = version
+
+    def run(self):
+        with zipfile.ZipFile(get_zip_filepath(self.version)) as zp:
+            doc_path = get_zip_doc_path(self.version)
+            for file in zp.namelist():
+                if not file.startswith(doc_path):
+                    continue
+                zp.extract(file, get_cache_path())
 
 class Builder:
 
@@ -74,7 +88,7 @@ def build(generator, cache, version):
     downloader.run()
 
     click.echo('Extracting files...')
-    extractor = Extractor()
+    extractor = Extractor(version)
     extractor.run()
 
     click.echo('Building stubs...')
