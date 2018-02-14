@@ -18,6 +18,9 @@ class GDScriptWriter(Writer):
         self._indent_level = 0
         self._indent_char = ' ' * 4
 
+    def _get_wrapped_lines(self, lines, columns=78):
+        return textwrap.wrap(lines, columns)
+
     def _make_line(self, line='', nl=True):
         result = (self._indent_char * self._indent_level) + line
         result += '\n' if nl else ''
@@ -63,44 +66,44 @@ class GDScriptWriter(Writer):
         os.makedirs(self._output_path, exist_ok=True)
         with open(output_path, 'w+') as file:
             self._write_brief_description(file, klass)
-            self._write_newline(file, '#')
             self._write_description(file, klass)
-            self._write_newline(file)
             self._write_class_def(file, klass)
-            self._write_newline(file)
             self._write_constants(file, klass)
-            self._write_newline(file)
-            self._write_signals(file, klass)
-            self._write_newline(file)
-            self._write_members(file, klass)
-            self._write_newline(file)
-            self._write_methods(file, klass)
+            # self._write_newline(file)
+            # self._write_signals(file, klass)
+            # self._write_newline(file)
+            # self._write_members(file, klass)
+            # self._write_newline(file)
+            # self._write_methods(file, klass)
 
     def _write_brief_description(self, file, klass):
         if not klass.brief_description.strip():
             return
-        file.write('# {}\n'.format(klass.brief_description.strip()))
-        self._add_empty_line = True
+        wlines = self._get_wrapped_lines(klass.brief_description.strip())
+        raw_text = ''
+        raw_text += '\n'.join(['# ' + line.strip() for line in wlines])
+        if raw_text.strip():
+            raw_text = '#\n' + raw_text + '\n'
+            file.write(raw_text)
 
     def _write_description(self, file, klass):
         result = ''
+        raw_text = ''
         for line in klass.description.split('\n'):
-            result += '\n# '.join(textwrap.wrap(line, 78)).strip()
-        result += '\n#'
-        result += '\n# {}'.format(klass.get_doc_link())
-        if result.strip():
-            result = '# ' + result + '\n'
+            wlines = self._get_wrapped_lines(line)
+            raw_text += '\n'.join(['# ' + line.strip() for line in wlines])
+        if raw_text.strip():
+            result += '#\n' + raw_text + '\n'
+            result += '#\n'
         file.write(result)
-        if klass.description.strip():
-            self._add_empty_line = True
 
     def _write_class_def(self, file, klass):
-        if not klass.inherits:
-            return
-        raw_line = 'class {} extends {}:\n'.format(klass.name, klass.inherits)
+        raw_line = 'class {}'.format(klass.name)
+        if klass.inherits:
+            raw_line += ' extends {}'.format(klass.inherits)
+        raw_line += ':\n'
         file.write(self._make_line(raw_line))
         self._indent_level += 1
-        self._add_empty_line = True
 
     def _write_constants(self, file, klass):
         for idx, constant in enumerate(klass.constants):
