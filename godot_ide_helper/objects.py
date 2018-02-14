@@ -26,6 +26,9 @@ class Member(object):
         self.type = ''
         self.description = ''
 
+    def __repr__(self):
+        return '{} {}'.format(self.type, self.name)
+
 class Argument(object):
     def __init__(self):
         super(Argument, self).__init__()
@@ -33,6 +36,9 @@ class Argument(object):
         self.name = ''
         self.index = ''
         self.type = ''
+
+    def __repr__(self):
+        return '{} {}'.format(self.type, self.name)
 
 class Method(object):
     _URL_TEMPLATE = '{0}/class_{1}.html#class-{2}-{3}'
@@ -54,6 +60,10 @@ class Method(object):
                                          urllib.parse.quote(klass_name),
                                          urllib.parse.quote(klass_anchor_name),
                                          urllib.parse.quote(method_name))
+
+    def __repr__(self):
+        args = [str(a) for a in self.arguments]
+        return '{} {}({})'.format(self.return_type, self.name, ','.join(args))
 
 class Class(object):
     _URL_TEMPLATE = '{0}/class_{1}.html'
