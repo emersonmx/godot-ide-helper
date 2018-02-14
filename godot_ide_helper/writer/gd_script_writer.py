@@ -25,7 +25,7 @@ class GDScriptWriter(Writer):
         return (self._indent_char * self._indent_level) + line
 
     def _make_line(self, line='', nl=True):
-        result = self._indent_line(line)
+        result = self._indent_line(line).rstrip()
         result += '\n' if nl else ''
         return result
 
