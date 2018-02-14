@@ -8,36 +8,29 @@ import requests
 import click
 
 import generators
-
-CLASSES_PATH = os.path.abspath('classes.xml')
+import downloaders
 
 class GodotVersions:
 
     def __init__(self):
         self.headers = {'Accept': 'application/vnd.github.v3+json'}
         self.url = 'https://api.github.com/repos/godotengine/godot/tags'
-        self.dl_url_base = 'https://github.com/godotengine/godot/raw/{}/doc/base/classes.xml'
-
-    def get_download_url(self, version):
-        return self.dl_url_base.format(version)
 
     def list(self):
         response = requests.get(self.url, headers=self.headers)
-        releases = response.json()
+        if response.status_code == 403:
+            raise click.ClickException('Exceeded github limit')
+
+        tags = response.json()
 
         # yield 'master'
-        for release in releases:
-            yield release['name']
+        for tag in tags:
+            yield tag['name']
 
     def download(self, version):
-        dl_url = self.get_download_url(version)
-        rfile = requests.get(dl_url)
-        with open(CLASSES_PATH, 'w+') as f:
-            f.write(rfile.text)
-
-@click.group()
-def cli():
-    pass
+        downloader = downloaders.ZipDownloader(version)
+        downloader.download()
+        sys.exit(0)
 
 @cli.command()
 @click.option('--generator', default='GDScript', type=click.Choice(['GDScript']),
@@ -56,11 +49,7 @@ def build(generator, version):
     elif version not in versions:
         raise click.UsageError('Invalid version')
 
-    dl_url = godot_versions.get_download_url(version)
-    if os.path.exists(CLASSES_PATH):
-        os.remove(CLASSES_PATH)
-
-    click.echo('Downloading "{}"...'.format(dl_url))
+    click.echo('Downloading version "{}"...'.format(version))
     godot_versions.download(version)
 
     click.echo('Generating stubs...')
