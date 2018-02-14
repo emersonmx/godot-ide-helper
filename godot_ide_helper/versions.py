@@ -15,7 +15,7 @@ class GodotVersions:
     def list(self):
         response = requests.get(self.url, headers=self.headers)
         if response.status_code == 403:
-            raise click.ClickException('Exceeded github limit')
+            raise click.ClickException('Exceeded github limit.')
 
         tags = response.json()
 
