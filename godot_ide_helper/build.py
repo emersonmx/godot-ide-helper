@@ -11,6 +11,7 @@ from godot_ide_helper.cli import cli
 from godot_ide_helper.utils import *
 from godot_ide_helper.versions import GodotVersions
 from godot_ide_helper import generators
+from godot_ide_helper.reader import *
 
 
 class Downloader:
@@ -60,16 +61,24 @@ class Builder:
         self.generator = generator
         self.version = version
 
-    def build_legacy(self):
+    def make_generator(self):
         class_name = self.generator + 'Generator'
-        cls = getattr(generators, class_name)
+        return getattr(generators, class_name)
+
+    def build_legacy(self):
+        cls = self.make_generator()
         inputfile = os.path.join(get_zip_doc_path(self.version), 'base/classes.xml')
-        output_path = os.path.join(get_zip_extraction_path(self.version), 'scripts')
+        output_path = get_scripts_path(self.version)
         app = cls(inputfile, output_path)
         app.run()
 
     def build(self):
-        print('build')
+        inputfile = os.path.join(get_zip_doc_path(self.version), 'classes/Node2D.xml')
+        reader = ClassXmlReader(inputfile)
+        for klass in reader.read():
+            print(klass)
+            print(klass.members)
+            print(klass.methods)
 
     def run(self):
         if self.version < '3.0-stable':

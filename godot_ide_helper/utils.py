@@ -11,6 +11,9 @@ def get_cache_path():
     os.makedirs(cache_path, exist_ok=True)
     return cache_path
 
+def get_scripts_path(version):
+    return os.path.join(get_zip_extraction_path(version), 'scripts')
+
 def get_zip_extraction_path(version):
     cache_path = get_cache_path()
     return os.path.join(cache_path, 'godot-{}'.format(version))
