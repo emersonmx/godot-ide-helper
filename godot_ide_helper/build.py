@@ -73,12 +73,13 @@ class Builder:
         app.run()
 
     def build(self):
-        inputfile = os.path.join(get_zip_doc_path(self.version), 'classes/Node2D.xml')
-        reader = ClassXmlReader(inputfile)
-        for klass in reader.read():
-            print(klass)
-            print(klass.members)
-            print(klass.methods)
+        classes_path = os.path.join(get_zip_doc_path(self.version), 'classes')
+        for class_file in os.listdir(classes_path):
+            cls = self.make_generator()
+            inputfile = os.path.join(classes_path, class_file)
+            output_path = get_scripts_path(self.version)
+            app = cls(inputfile, output_path, False)
+            app.run()
 
     def run(self):
         if self.version < '3.0-stable':
