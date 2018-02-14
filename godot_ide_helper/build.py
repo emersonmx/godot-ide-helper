@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import shutil
 import zipfile
 import click
 import requests
@@ -36,21 +37,12 @@ class Extractor:
 
     def __init__(self, version):
         self.version = version
-        self.cache = cache
 
     def run(self):
-        dl_url = self.get_download_url()
-        response = requests.get(dl_url, stream=True)
-        with open(output_path, 'wb') as f:
-            for chunk in response:
-                f.write(chunk)
+        zip_extract_path = get_zip_extract_path(self.version)
+        if os.path.exists(zip_extract_path):
+            shutil.rmtree(zip_extract_path)
 
-class Extractor:
-
-    def __init__(self, version):
-        self.version = version
-
-    def run(self):
         with zipfile.ZipFile(get_zip_filepath(self.version)) as zp:
             doc_path = get_zip_doc_path(self.version)
             for file in zp.namelist():
@@ -60,8 +52,8 @@ class Extractor:
 
 class Builder:
 
-    def __init__(self):
-        pass
+    def __init__(self, version):
+        self.version = version
 
     def run(self):
         pass
@@ -92,7 +84,7 @@ def build(generator, cache, version):
     extractor.run()
 
     click.echo('Building stubs...')
-    builder = Builder()
+    builder = Builder(version)
     builder.run()
 
     click.echo('Done.')
