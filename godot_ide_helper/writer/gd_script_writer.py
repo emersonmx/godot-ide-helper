@@ -92,7 +92,7 @@ class GDScriptWriter(Writer):
         if klass.inherits:
             raw_line += ' extends {}'.format(klass.inherits)
         raw_line += ':\n'
-        file.write(self._make_line(raw_line))
+        file.write(raw_line)
         self._indent_level += 1
 
     def _write_constants(self, file, klass):
@@ -102,17 +102,18 @@ class GDScriptWriter(Writer):
             self._add_empty_line = True
 
     def _write_constant(self, file, constant, first):
-        raw_text = ''
+        raw_text = '\n'
         if constant.description:
             description_text = self._get_description_text(constant.description)
             if description_text.strip():
                 raw_text += '#\n' + description_text + '\n'
                 raw_text += '#\n'
         raw_text += 'const ' + constant.name
-        if constant.value:
-            raw_text += ' = ' + constant.value
-        raw_text += '\n' * 2
-        file.write(raw_text)
+        raw_text += ' = ' + constant.value if constant.value else ''
+        indented_text = ''
+        for line in raw_text.split('\n'):
+            indented_text += self._make_line(line)
+        file.write(indented_text)
 
     def _write_signals(self, file, klass):
         for idx, signal in enumerate(klass.signals):
