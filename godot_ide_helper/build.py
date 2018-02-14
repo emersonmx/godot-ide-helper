@@ -98,11 +98,11 @@ def build(generator, cache, version):
     VERSION can be [stable|x.y.z-stable]
     '''
     godot_versions = GodotVersions()
-    # versions = godot_versions.list()
-    # if version == 'stable':
-        # version = next(x for x in versions if 'stable' in x)
-    # elif version not in versions:
-        # raise click.UsageError('Invalid version.')
+    versions = godot_versions.list()
+    if version == 'stable':
+        version = next(x for x in versions if 'stable' in x)
+    elif version not in versions:
+        raise click.UsageError('Invalid version.')
 
     click.echo('Downloading version "{}"...'.format(version))
     downloader = Downloader(version, cache)
