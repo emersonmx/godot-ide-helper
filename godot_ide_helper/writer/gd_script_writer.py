@@ -31,22 +31,12 @@ class GDScriptWriter(Writer):
             file.write(prefix + '\n')
         self._add_empty_line = False
 
-    def _get_description_text(self, text, newline_spaced=True):
-        texts = text.split('\n')
+    def _get_description_text(self, text):
         result = ''
-        if newline_spaced:
-            result += '\n'
-
         count_empty_lines = 0
-        for line in texts:
-            if len(line.strip()) == 0:
-                count_empty_lines += 1
-            wrapped_text = '\n# '.join(textwrap.wrap(line, 78))
-            new_line = '# {}'.format(wrapped_text.strip())
-            result += new_line.strip() + '\n'
-
-        if count_empty_lines == len(texts):
-            return '\n' if newline_spaced else ''
+        for line in [line.strip() for line in text.split('\n')]:
+            wlines = self._get_wrapped_lines(line)
+            result += '\n'.join(['# ' + line.strip() for line in wlines])
 
         return result
 
@@ -112,14 +102,17 @@ class GDScriptWriter(Writer):
             self._add_empty_line = True
 
     def _write_constant(self, file, constant, first):
-        text = ''
+        raw_text = ''
         if constant.description:
-            text += self._get_description_text(constant.description, not first)
-        text += 'const ' + constant.name
+            description_text = self._get_description_text(constant.description)
+            if description_text.strip():
+                raw_text += '#\n' + description_text + '\n'
+                raw_text += '#\n'
+        raw_text += 'const ' + constant.name
         if constant.value:
-            text += ' = ' + constant.value
-        text += '\n'
-        file.write(text)
+            raw_text += ' = ' + constant.value
+        raw_text += '\n' * 2
+        file.write(raw_text)
 
     def _write_signals(self, file, klass):
         for idx, signal in enumerate(klass.signals):
