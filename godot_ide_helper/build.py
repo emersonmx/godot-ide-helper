@@ -44,7 +44,7 @@ class Extractor:
             shutil.rmtree(zip_extract_path)
 
         with zipfile.ZipFile(get_zip_filepath(self.version)) as zp:
-            doc_path = get_zip_doc_path(self.version)
+            doc_path = get_zip_doc_relpath(self.version)
             for file in zp.namelist():
                 if not file.startswith(doc_path):
                     continue

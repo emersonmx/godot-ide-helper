@@ -22,5 +22,9 @@ def get_zip_filepath(version):
     cache_path = get_cache_path()
     return os.path.join(cache_path, get_zip_filename(version))
 
-def get_zip_doc_path(version):
+def get_zip_doc_relpath(version):
     return 'godot-{}/doc/'.format(version)
+
+def get_zip_doc_path(version):
+    cache_path = get_cache_path()
+    return os.path.join(cache_path, get_zip_doc_relpath(version))
