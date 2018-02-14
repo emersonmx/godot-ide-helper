@@ -22,7 +22,7 @@ Add the following to your `~/.ctags` file:
 --langdef=gdscript
 --map-gdscript=.gd
 
---regex-gdscript=/^#![ \t]*class:[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/c,class/{scope=set}
+--regex-gdscript=/^#![ \t]*class:[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/c,class/{scope=push}
 --regex-gdscript=/^[ \t]*extends[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/i,inherits/{scope=push}
 --regex-gdscript=/^[ \t]*const[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/C,constant/{scope=ref}
 --regex-gdscript=/^[ \t]*export[ \t]*(\([ \t]*[a-zA-Z0-9_, \"\*\.]*\)|[ \t])+var[ \t]+([a-zA-Z0-9_]+)[ \t]*/\2/e,export/{scope=ref}
