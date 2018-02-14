@@ -39,7 +39,7 @@ class Extractor:
         self.version = version
 
     def run(self):
-        zip_extract_path = get_zip_extract_path(self.version)
+        zip_extract_path = get_zip_extraction_path(self.version)
         if os.path.exists(zip_extract_path):
             shutil.rmtree(zip_extract_path)
 
@@ -73,7 +73,7 @@ def build(generator, cache, version):
     if version == 'stable':
         version = next(x for x in versions if 'stable' in x)
     elif version not in versions:
-        raise click.UsageError('Invalid version')
+        raise click.UsageError('Invalid version.')
 
     click.echo('Downloading version "{}"...'.format(version))
     downloader = Downloader(version, cache)
