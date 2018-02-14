@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import os
 import textwrap
 
-from writer.common import Writer
+from godot_ide_helper.writer.common import Writer
 
 from urllib.parse import quote
 
 class GDScriptWriter(Writer):
 
-    def __init__(self):
+    def __init__(self, output_path):
         super(GDScriptWriter, self).__init__()
 
+        self._output_path = output_path
         self._add_empty_line = False
 
     def _write_newline(self, file, prefix=''):
@@ -50,7 +52,9 @@ class GDScriptWriter(Writer):
         return result
 
     def _write_class(self, klass):
-        with open('scripts/{}.gd'.format(klass.name), 'w+') as file:
+        output_path = os.path.join(self._output_path, '{}.gd'.format(klass.name))
+        os.makedirs(self._output_path, exist_ok=True)
+        with open(output_path, 'w+') as file:
             self._write_class_def(file, klass)
             self._write_newline(file)
             self._write_brief_description(file, klass)

@@ -6,14 +6,15 @@ import requests
 
 from godot_ide_helper.cli import cli
 
+
 class GodotVersions:
 
     def __init__(self):
-        self.headers = {'Accept': 'application/vnd.github.v3+json'}
-        self.url = 'https://api.github.com/repos/godotengine/godot/tags'
+        self._headers = {'Accept': 'application/vnd.github.v3+json'}
+        self._url = 'https://api.github.com/repos/godotengine/godot/tags'
 
     def list(self):
-        response = requests.get(self.url, headers=self.headers)
+        response = requests.get(self._url, headers=self._headers)
         if response.status_code == 403:
             raise click.ClickException('Exceeded github limit.')
 

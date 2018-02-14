@@ -10,6 +10,8 @@ import requests
 from godot_ide_helper.cli import cli
 from godot_ide_helper.utils import *
 from godot_ide_helper.versions import GodotVersions
+from godot_ide_helper import generators
+
 
 class Downloader:
 
@@ -33,6 +35,7 @@ class Downloader:
             for chunk in response:
                 f.write(chunk)
 
+
 class Extractor:
 
     def __init__(self, version):
@@ -50,13 +53,20 @@ class Extractor:
                     continue
                 zp.extract(file, get_cache_path())
 
+
 class Builder:
 
-    def __init__(self, version):
+    def __init__(self, generator, version):
+        self.generator = generator
         self.version = version
 
     def build_legacy(self):
-        print('build_legacy')
+        class_name = self.generator + 'Generator'
+        cls = getattr(generators, class_name)
+        inputfile = os.path.join(get_zip_doc_path(self.version), 'base/classes.xml')
+        output_path = os.path.join(get_zip_extraction_path(self.version), 'scripts')
+        app = cls(inputfile, output_path)
+        app.run()
 
     def build(self):
         print('build')
@@ -78,11 +88,11 @@ def build(generator, cache, version):
     VERSION can be [stable|x.y.z-stable]
     '''
     godot_versions = GodotVersions()
-    versions = godot_versions.list()
-    if version == 'stable':
-        version = next(x for x in versions if 'stable' in x)
-    elif version not in versions:
-        raise click.UsageError('Invalid version.')
+    # versions = godot_versions.list()
+    # if version == 'stable':
+        # version = next(x for x in versions if 'stable' in x)
+    # elif version not in versions:
+        # raise click.UsageError('Invalid version.')
 
     click.echo('Downloading version "{}"...'.format(version))
     downloader = Downloader(version, cache)
@@ -93,7 +103,7 @@ def build(generator, cache, version):
     extractor.run()
 
     click.echo('Building stubs...')
-    builder = Builder(version)
+    builder = Builder(generator, version)
     builder.run()
 
     click.echo('Done.')

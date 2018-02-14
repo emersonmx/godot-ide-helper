@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-from reader.common import Reader
+from godot_ide_helper.reader.common import Reader
 
 import xml.etree.ElementTree as ET
 
-from objects import *
+from godot_ide_helper.objects import *
 
 
 class XmlReader(Reader):
 
-    def __init__(self):
+    def __init__(self, inputfile):
         super(XmlReader, self).__init__()
+
+        self._inputfile = inputfile
 
     def _get_text(self, el, default=''):
         return el.text if el is not None else default
@@ -102,7 +104,7 @@ class XmlReader(Reader):
         return obj
 
     def read(self):
-        tree = ET.parse('classes.xml')
+        tree = ET.parse(self._inputfile)
 
         for child in tree.getroot():
             klass = self._extract_class(child)
