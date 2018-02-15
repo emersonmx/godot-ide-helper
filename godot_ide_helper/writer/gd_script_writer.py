@@ -22,10 +22,10 @@ class GDScriptWriter(Writer):
         return textwrap.wrap(lines, columns)
 
     def _indent_line(self, line):
-        return (self._indent_char * self._indent_level) + line
+        return self._indent_char + line
 
     def _make_line(self, line='', nl=True):
-        result = self._indent_line(line).rstrip()
+        result = line.rstrip()
         result += '\n' if nl else ''
         return result
 
@@ -93,12 +93,11 @@ class GDScriptWriter(Writer):
         raw_line = ''
         if klass.brief_description.strip() or klass.description.strip():
             raw_line += '#\n'
-        raw_line += 'class {}'.format(klass.name)
+            raw_line += '\n'
+        raw_line += '#! class: {}\n'.format(klass.name)
         if klass.inherits:
-            raw_line += ' extends {}'.format(klass.inherits)
-        raw_line += ':\n'
+            raw_line += 'extends {}\n'.format(klass.inherits)
         file.write(raw_line)
-        self._indent_level += 1
 
     def _write_constants(self, file, klass):
         for idx, constant in enumerate(klass.constants):
