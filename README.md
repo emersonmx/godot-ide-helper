@@ -22,14 +22,13 @@ Add the following to your `~/.ctags` file:
 --langdef=gdscript
 --map-gdscript=.gd
 
---regex-gdscript=/^#![ \t]*class:[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/c,class/{scope=push}
---regex-gdscript=/^[ \t]*extends[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/i,inherits/{scope=push}
---regex-gdscript=/^[ \t]*const[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/C,constant/{scope=ref}
---regex-gdscript=/^[ \t]*export[ \t]*(\([ \t]*[a-zA-Z0-9_, \"\*\.]*\)|[ \t])+var[ \t]+([a-zA-Z0-9_]+)[ \t]*/\2/e,export/{scope=ref}
---regex-gdscript=/^[ \t]*onready[ \t]+var[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/o,onready-variable/{scope=ref}
---regex-gdscript=/^[ \t]*signal[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/s,signal/{scope=ref}
---regex-gdscript=/^[ \t]*func[ \t]+([a-zA-Z0-9_]+)[ \t]*/\1/f,function/{scope=ref}
---regex-gdscript=/^[ \t]*var[ \t]+([a-zA-Z0-9_]+)[ \t]=[ \t]*preload*/\1/p,preload/{scope=ref}
+--regex-gdscript=/^#![[:blank:]]*class:[[:blank:]]+([a-zA-Z0-9_]+)[[:blank:]]*/\1/c,class,classes/{scope=push}
+--regex-gdscript=/^[[:blank:]]*const[[:blank:]]+([a-zA-Z0-9_]+)[[:blank:]]*/\1/C,constant,constants/{scope=ref}
+--regex-gdscript=/^[[:blank:]]*signal[[:blank:]]+([a-zA-Z0-9_]+)[[:blank:]]*/\1/s,signal,signals/{scope=ref}
+--regex-gdscript=/^[[:blank:]]*export[[:blank:]]*(\([a-zA-Z0-9_, \"\*\.]*\)|[[:blank:]]*)+(onready[[:blank:]]+)?var[[:blank:]]+([a-zA-Z0-9_]+)[[:blank:]]*/\3/e,export,exports/{scope=ref}
+--regex-gdscript=/^[[:blank:]]*onready[[:blank:]]+var[[:blank:]]+([a-zA-Z0-9_]+)[[:blank:]]*/\1/o,onready/{scope=ref}
+--regex-gdscript=/^[[:blank:]]*var[[:blank:]]+([a-zA-Z0-9_]+)[[:blank:]]*/\1/a,attribute,attributes/{scope=ref}
+--regex-gdscript=/^[[:blank:]]*func[[:blank:]]+([a-zA-Z0-9_]+)[[:blank:]]*/\1/m,method,methods/{scope=ref}
 ```
 
 Follow [this](https://github.com/syskrank/vim-gdscript-ctags) for vim + gdscript + ctags
